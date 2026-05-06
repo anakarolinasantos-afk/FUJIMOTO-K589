@@ -48,26 +48,44 @@
   .tab { padding: 8px 20px; border-radius: 8px; border: none; background: transparent; color: var(--muted); font-family: 'Syne', sans-serif; font-size: 13px; cursor: pointer; transition: all 0.2s; }
   .tab.active { background: var(--surface2); color: var(--text); border: 1px solid var(--border2); }
 
+  /* TABLE */
   .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 32px; animation: fadeUp 0.5s 0.1s ease both; }
   .table-head { display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr; padding: 14px 24px; background: var(--surface2); border-bottom: 1px solid var(--border); font-size: 11px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; font-family: 'DM Mono', monospace; }
   .table-row { display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr; padding: 14px 24px; border-bottom: 1px solid var(--border); align-items: center; transition: background 0.15s; }
   .table-row:last-child { border-bottom: none; }
   .table-row:hover { background: rgba(255,255,255,0.03); }
-  .table-row .cat { font-size: 13px; font-weight: 600; }
-  .table-row .val { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted2); text-align: right; }
-  .table-row .val.real { color: var(--text); }
+  .table-row.group-header { background: var(--surface2); cursor: pointer; user-select: none; }
+  .table-row.group-header:hover { background: rgba(255,255,255,0.06); }
+  .table-row.subrow { background: rgba(201,184,255,0.03); padding-left: 36px; display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr; }
+  .table-row.subrow:hover { background: rgba(201,184,255,0.06); }
+  .table-row.subrow .cat { font-size: 12px; color: var(--muted2); font-weight: 400; }
+  .table-row.subrow .val { font-size: 11px; }
+  .subrows { overflow: hidden; transition: max-height 0.4s ease; }
+  .cat { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .expand-icon { font-size: 10px; color: var(--accent); transition: transform 0.3s; display: inline-block; }
+  .expanded .expand-icon { transform: rotate(90deg); }
+  .val { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted2); text-align: right; }
+  .val.real { color: var(--text); }
   .badge { display: inline-flex; align-items: center; justify-content: flex-end; gap: 4px; padding: 3px 8px; border-radius: 6px; font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; }
   .badge.up { background: var(--red-dim); color: var(--red); }
   .badge.down { background: var(--green-dim); color: var(--green); }
-  .bar-wrap { grid-column: 1 / -1; height: 3px; background: rgba(255,255,255,0.05); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+  .badge.neutral { background: rgba(160,157,168,0.1); color: var(--muted2); }
+  .badge.new { background: rgba(242,98,98,0.15); color: #ffa07a; }
+  .badge.removed { background: rgba(86,209,140,0.15); color: var(--green); }
+  .bar-wrap { grid-column: 1 / -1; height: 2px; background: rgba(255,255,255,0.05); border-radius: 2px; margin-top: 8px; overflow: hidden; }
   .bar-fill { height: 100%; border-radius: 2px; transition: width 1s ease; }
+  .pill { font-size: 9px; padding: 2px 6px; border-radius: 4px; font-family: 'DM Mono', monospace; letter-spacing: 0.05em; }
+  .pill.new { background: rgba(242,98,98,0.2); color: #ffa07a; }
+  .pill.removed { background: rgba(86,209,140,0.2); color: var(--green); }
 
+  /* CHARTS */
   .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 32px; }
   @media (max-width: 680px) { .charts-grid { grid-template-columns: 1fr; } }
   .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; animation: fadeUp 0.5s 0.2s ease both; }
   .chart-card.full { grid-column: 1 / -1; }
   .chart-title { font-size: 13px; font-weight: 600; color: var(--muted2); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 20px; font-family: 'DM Mono', monospace; }
 
+  /* UNIT */
   .unit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 32px; }
   @media (max-width: 680px) { .unit-grid { grid-template-columns: 1fr; } }
   .unit-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; display: flex; flex-direction: column; gap: 8px; }
@@ -121,8 +139,8 @@
     <div class="kpi-sub">Abaixo do orçado ✓</div>
   </div>
   <div class="kpi red" style="animation-delay:0.21s">
-    <div class="kpi-label">Maior Variação</div>
-    <div class="kpi-val">208,02%</div>
+    <div class="kpi-label">Maior estouro</div>
+    <div class="kpi-val">+208,02%</div>
     <div class="kpi-sub">Desp. desembaraço</div>
   </div>
 </div>
@@ -134,7 +152,7 @@
 
 <!-- TAB GERAL -->
 <div id="tab-geral" class="section active">
-  <div class="table-wrap">
+  <div class="table-wrap" id="mainTable">
     <div class="table-head">
       <span>Categoria</span>
       <span style="text-align:right">Aprovado</span>
@@ -151,21 +169,15 @@
         <span class="legend-item"><span class="legend-dot" style="background:var(--approve)"></span>Aprovado</span>
         <span class="legend-item"><span class="legend-dot" style="background:var(--real)"></span>Realizado</span>
       </div>
-      <div style="position:relative;height:300px">
-        <canvas id="barChart"></canvas>
-      </div>
+      <div style="position:relative;height:300px"><canvas id="barChart"></canvas></div>
     </div>
     <div class="chart-card">
       <div class="chart-title">Variação % por categoria</div>
-      <div style="position:relative;height:280px">
-        <canvas id="varChart"></canvas>
-      </div>
+      <div style="position:relative;height:280px"><canvas id="varChart"></canvas></div>
     </div>
     <div class="chart-card">
       <div class="chart-title">Composição do realizado</div>
-      <div style="position:relative;height:280px">
-        <canvas id="pieChart"></canvas>
-      </div>
+      <div style="position:relative;height:280px"><canvas id="pieChart"></canvas></div>
     </div>
   </div>
 </div>
@@ -200,62 +212,142 @@
       <span class="legend-item"><span class="legend-dot" style="background:var(--approve)"></span>Aprovado R$ 5,29</span>
       <span class="legend-item"><span class="legend-dot" style="background:var(--real)"></span>Realizado R$ 5,26</span>
     </div>
-    <div style="position:relative;height:180px">
-      <canvas id="unitChart"></canvas>
-    </div>
+    <div style="position:relative;height:180px"><canvas id="unitChart"></canvas></div>
   </div>
   <div class="chart-card">
     <div class="chart-title">Contribuição de cada categoria ao custo unitário realizado</div>
-    <div style="position:relative;height:280px">
-      <canvas id="unitPieChart"></canvas>
-    </div>
+    <div style="position:relative;height:280px"><canvas id="unitPieChart"></canvas></div>
   </div>
 </div>
 
 <script>
-const cats = ['Produto','II','IPI','PIS','COFINS','ICMS','Taxa Siscomex','Frete marítimo','Desp. desembaraço','Seguro','Frete rodoviário'];
-const apr = [345076.20, 40519.68, 13510.31, 7878.83, 36205.09, 15100.23, 214.50, 35853.68, 9632.78, 2269.33, 65400.00];
-const rea = [326499.92, 37674.82, 12561.76, 7325.66, 33663.15, 11994.62, 154.23, 41156.06, 29670.80, 1816.49, 65400.00];
-const vars = [-5.38, -7.02, -7.02, -7.02, -7.02, -20.57, -28.10, 14.79, 208.02, -19.95, 0.00];
+// ── MAIN CATEGORIES ──────────────────────────────────────────────
+const cats = ['Produto','Impostos','Taxa Siscomex','Frete marítimo','Desp. desembaraço','Seguro','Frete rodoviário'];
+const apr  = [345076.20, 113214.14, 214.50, 35853.68, 9632.78, 2269.33, 65400.00];
+const rea  = [326499.92, 65983.55, 154.23, 41156.06, 29670.80, 1816.49, 65400.00];
 
+// impostos grouped: II+IPI+PIS+COFINS+ICMS
+// apr: 40519.68+13510.31+7878.83+36205.09+15100.23 = 113214.14
+// rea: 37674.82+12561.76+7325.66+33663.15+11994.62 = 103219.01  ← recalc
+// wait: total rea = 567917.51, let me back-calc impostos rea:
+// 326499.92+154.23+41156.06+29670.80+1816.49+65400.00 = 464697.50 → impostos rea = 567917.51-464697.50 = 103220.01
+// use 103220.01
+const reaImpostos = 567917.51 - (326499.92 + 154.23 + 41156.06 + 29670.80 + 1816.49 + 65400.00);
+rea[1] = Math.round(reaImpostos * 100) / 100;
+
+const vars = cats.map((_, i) => apr[i] === 0 ? null : ((rea[i] - apr[i]) / apr[i] * 100));
+
+// ── DESEMBARAÇO SUBCATEGORIES ─────────────────────────────────────
+const subCats = [
+  { name: 'AFRMM - Marinha Mercante', apr: 2727.28, rea: 2657.80, status: 'normal' },
+  { name: 'Armazenagem',              apr: 3281.00, rea: 18516.00, status: 'normal' },
+  { name: 'Despachante',              apr: 1434.50, rea: 2575.00, status: 'normal' },
+  { name: 'SDA',                      apr: 940.00,  rea: 0,       status: 'removed' },
+  { name: 'Correios',                 apr: 50.00,   rea: 50.00,   status: 'normal' },
+  { name: 'Lavagem de CTNR',          apr: 1000.00, rea: 1000.00, status: 'normal' },
+  { name: 'Taxa Madeira',             apr: 200.00,  rea: 0,       status: 'removed' },
+  { name: 'Comavix (Desova + Arm. 15d + Paletização)', apr: 0, rea: 4872.00, status: 'new' },
+];
+
+const fmtBRL  = v => v === 0 ? '—' : 'R$ ' + v.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+const fmtBRLn = v => 'R$ ' + v.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+const fmtK    = v => 'R$ ' + (v/1000).toFixed(1) + 'k';
 const totalReal = 567917.51;
-const fmtBRL = v => 'R$ ' + v.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
-const fmtK = v => 'R$ ' + (v/1000).toFixed(1) + 'k';
 const gridColor = 'rgba(255,255,255,0.06)';
 const textColor = '#7a7880';
-const fontMono = "'DM Mono', monospace";
-const pieColors = ['#4e9cf5','#f0a04b','#56d18c','#c9b8ff','#f26262','#f5c842','#60c4f0','#e07bb5','#a3e635','#fb923c','#94a3b8'];
+const fontMono  = "'DM Mono', monospace";
+const pieColors = ['#4e9cf5','#f0a04b','#56d18c','#c9b8ff','#f26262','#f5c842','#94a3b8'];
 
-// Build table
-const tableWrap = document.querySelector('.table-wrap');
+// ── BUILD TABLE ───────────────────────────────────────────────────
+const tableWrap = document.getElementById('mainTable');
+
 cats.forEach((c, i) => {
-  const diff = rea[i] - apr[i];
-  const isUp = vars[i] > 0;
-  const isFlat = vars[i] === 0;
-  const pct = Math.min(Math.abs(rea[i] / apr[i] * 100), 100).toFixed(0);
+  const diff  = rea[i] - apr[i];
+  const v     = vars[i];
+  const isUp  = v > 0.005;
+  const isFlat= Math.abs(v) < 0.005;
+  const isDesemp = c === 'Desp. desembaraço';
+  const pct   = Math.min(Math.abs(rea[i] / apr[i] * 100), 100).toFixed(0);
+  const badgeClass = isFlat ? 'badge neutral' : (isUp ? 'badge up' : 'badge down');
+  const badgeIcon  = isFlat ? '—' : (isUp ? '▲' : '▼');
+  const diffColor  = isFlat ? 'var(--muted2)' : (isUp ? 'var(--red)' : 'var(--green)');
+  const barColor   = isUp ? 'var(--red)' : 'var(--green)';
+
+  // Group header row
   const row = document.createElement('div');
-  row.className = 'table-row';
-  const badgeClass = isFlat ? 'badge' : (isUp ? 'badge up' : 'badge down');
-  const badgeIcon = isFlat ? '—' : (isUp ? '▲' : '▼');
-  const diffColor = isFlat ? 'var(--muted2)' : (isUp ? 'var(--red)' : 'var(--green)');
-  const barColor = isUp ? 'var(--red)' : 'var(--green)';
+  row.className = 'table-row' + (isDesemp ? ' group-header' : '');
+  if (isDesemp) row.id = 'desemp-header';
   row.innerHTML = `
-    <span class="cat">${c}</span>
-    <span class="val">${fmtBRL(apr[i])}</span>
-    <span class="val real">${fmtBRL(rea[i])}</span>
-    <span class="val" style="color:${diffColor}">${diff >= 0 ? '+' : ''}${fmtBRL(diff)}</span>
-    <span style="text-align:right"><span class="${badgeClass}">${badgeIcon} ${Math.abs(vars[i]).toFixed(2)}%</span></span>
+    <span class="cat">
+      ${isDesemp ? '<span class="expand-icon">▶</span>' : ''}
+      ${c}
+    </span>
+    <span class="val">${fmtBRLn(apr[i])}</span>
+    <span class="val real">${fmtBRLn(rea[i])}</span>
+    <span class="val" style="color:${diffColor}">${diff >= 0 ? '+' : ''}${fmtBRLn(diff)}</span>
+    <span style="text-align:right"><span class="${badgeClass}">${badgeIcon} ${Math.abs(v).toFixed(2)}%</span></span>
     <div class="bar-wrap" style="grid-column:1/-1">
       <div class="bar-fill" style="width:0%;background:${barColor}" data-pct="${pct}"></div>
     </div>
   `;
   tableWrap.appendChild(row);
+
+  // Subcategories for desembaraço
+  if (isDesemp) {
+    const subContainer = document.createElement('div');
+    subContainer.className = 'subrows';
+    subContainer.id = 'subrows-desemp';
+    subContainer.style.maxHeight = '0px';
+
+    subCats.forEach(s => {
+      const sd   = s.rea - s.apr;
+      const sv   = s.apr > 0 ? (sd / s.apr * 100) : null;
+      const sUp  = sv !== null && sv > 0.005;
+      const sFlat= sv !== null && Math.abs(sv) < 0.005;
+      const isNew = s.status === 'new';
+      const isRem = s.status === 'removed';
+
+      let badgeHTML;
+      if (isNew) badgeHTML = '<span class="badge new">✦ NOVA</span>';
+      else if (isRem) badgeHTML = '<span class="badge removed">✕ NÃO UTILIZADO</span>';
+      else if (sFlat) badgeHTML = `<span class="badge neutral">— 0,00%</span>`;
+      else badgeHTML = `<span class="badge ${sUp ? 'up' : 'down'}">${sUp ? '▲' : '▼'} ${Math.abs(sv).toFixed(2)}%</span>`;
+
+      const sDiffColor = isNew ? '#ffa07a' : isRem ? 'var(--green)' : sFlat ? 'var(--muted2)' : sUp ? 'var(--red)' : 'var(--green)';
+
+      const subRow = document.createElement('div');
+      subRow.className = 'table-row subrow';
+      subRow.innerHTML = `
+        <span class="cat" style="font-size:12px;font-weight:400;color:var(--muted2)">
+          ${s.name}
+          ${isNew ? '<span class="pill new">NOVA</span>' : ''}
+          ${isRem ? '<span class="pill removed">NÃO UTILIZADO</span>' : ''}
+        </span>
+        <span class="val">${s.apr > 0 ? fmtBRLn(s.apr) : '—'}</span>
+        <span class="val real">${s.rea > 0 ? fmtBRLn(s.rea) : '—'}</span>
+        <span class="val" style="color:${sDiffColor}">${isNew ? '+' + fmtBRLn(s.rea) : isRem ? '-' + fmtBRLn(s.apr) : (sd >= 0 ? '+' : '') + fmtBRLn(sd)}</span>
+        <span style="text-align:right">${badgeHTML}</span>
+      `;
+      subContainer.appendChild(subRow);
+    });
+
+    tableWrap.appendChild(subContainer);
+
+    // Toggle expand
+    row.addEventListener('click', () => {
+      const isOpen = subContainer.style.maxHeight !== '0px';
+      subContainer.style.maxHeight = isOpen ? '0px' : subContainer.scrollHeight + 'px';
+      row.classList.toggle('expanded', !isOpen);
+    });
+  }
 });
 
+// Animate bars
 setTimeout(() => {
   document.querySelectorAll('.bar-fill').forEach(b => { b.style.width = b.dataset.pct + '%'; });
 }, 300);
 
+// ── CHARTS ────────────────────────────────────────────────────────
 new Chart(document.getElementById('barChart'), {
   type: 'bar',
   data: {
@@ -267,9 +359,9 @@ new Chart(document.getElementById('barChart'), {
   },
   options: {
     responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + fmtBRL(ctx.parsed.y) } } },
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + fmtBRLn(ctx.parsed.y) } } },
     scales: {
-      x: { ticks: { color: textColor, font: { family: fontMono, size: 10 }, autoSkip: false, maxRotation: 35 }, grid: { color: gridColor } },
+      x: { ticks: { color: textColor, font: { family: fontMono, size: 10 }, autoSkip: false, maxRotation: 25 }, grid: { color: gridColor } },
       y: { ticks: { color: textColor, font: { family: fontMono, size: 11 }, callback: fmtK }, grid: { color: gridColor } }
     }
   }
@@ -285,8 +377,8 @@ new Chart(document.getElementById('varChart'), {
     responsive: true, maintainAspectRatio: false,
     plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + ctx.parsed.y.toFixed(2) + '%' } } },
     scales: {
-      x: { ticks: { color: textColor, font: { family: fontMono, size: 10 }, autoSkip: false, maxRotation: 35 }, grid: { color: gridColor } },
-      y: { ticks: { color: textColor, font: { family: fontMono, size: 11 }, callback: v => v + '%' }, grid: { color: gridColor } }
+      x: { ticks: { color: textColor, font: { family: fontMono, size: 10 }, autoSkip: false, maxRotation: 25 }, grid: { color: gridColor } },
+      y: { ticks: { color: textColor, font: { family: fontMono, size: 11 }, callback: v => v.toFixed(0) + '%' }, grid: { color: gridColor } }
     }
   }
 });
@@ -298,7 +390,7 @@ new Chart(document.getElementById('pieChart'), {
     responsive: true, maintainAspectRatio: false,
     plugins: {
       legend: { position: 'bottom', labels: { color: textColor, font: { family: fontMono, size: 10 }, padding: 10, boxWidth: 10 } },
-      tooltip: { callbacks: { label: ctx => ' ' + fmtBRL(ctx.parsed) + ' (' + (ctx.parsed / totalReal * 100).toFixed(1) + '%)' } }
+      tooltip: { callbacks: { label: ctx => ' ' + fmtBRLn(ctx.parsed) + ' (' + (ctx.parsed / totalReal * 100).toFixed(1) + '%)' } }
     }
   }
 });
